@@ -3,6 +3,10 @@ package com.parkit.parkingsystem.constants;
 public class DBConstants {
 
 	public static final String GET_NEXT_PARKING_SPOT = "select min(PARKING_NUMBER) from parking where AVAILABLE = true and TYPE = ?";
+
+	// public static final String GET_AVALIVILITY_OF_PARKINGSPOT = "select
+	// AVAILABLE, TYPE from parking where PARKING_NUMBER = ?";
+
 	public static final String UPDATE_PARKING_SPOT = "update parking set available = ? where PARKING_NUMBER = ?";
 
 	public static final String SAVE_TICKET = "insert into ticket(PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME) values(?,?,?,?,?)";

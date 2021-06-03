@@ -131,4 +131,25 @@ public class ParkingService {
 		boolean result = (ocurrenciesNumber > numberOfEntriesToBeARegularClient) ? true : false;
 		return result;
 	}
+
+	public Ticket getTicketInBDD() {
+		Ticket ticket = null;
+		try {
+			ticket = ticketDAO.getTicket(getVehichleRegNumber());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return ticket;
+
+	}
+
+	// public ParkingSpot checkParkingSpotDAO(Ticket ticket) {
+	//
+	// ParkingSpot parkingSpot =
+	// parkingSpotDAO.checkAvalableParkingSpot(ticket.getParkingSpot().getId());
+	//
+	// return parkingSpot;
+	//
+	// }
 }
