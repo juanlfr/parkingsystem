@@ -6,7 +6,9 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +22,7 @@ import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
 public class ParkingDataBaseIT {
 
@@ -42,22 +45,27 @@ public class ParkingDataBaseIT {
 
 	@BeforeEach
 	private void setUpPerTest() throws Exception {
-		when(inputReaderUtil.readSelection()).thenReturn(1);
+
 		when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-		dataBasePrepareService.clearDataBaseEntries();
+		// dataBasePrepareService.clearDataBaseEntries();
 	}
 
 	@AfterAll
 	private static void tearDown() {
-
+		dataBasePrepareService.clearDataBaseEntries();
 	}
 
 	@Test
+	@org.junit.jupiter.api.Order(1)
 	public void testParkingACar() {
+
+		when(inputReaderUtil.readSelection()).thenReturn(1);
+
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
 		parkingService.processIncomingVehicle();
-		// TODO: check that a ticket is actualy saved in DB and Parking table is updated
-		// with availability
+		// TODO: check that a ticket is actually saved in DB and Parking table is
+		// updated with availability
 		Ticket ticketInBDD = parkingService.getTicketInBDD();
 		ParkingSpot parkingSpot = ticketInBDD.getParkingSpot();
 
@@ -66,9 +74,16 @@ public class ParkingDataBaseIT {
 	}
 
 	@Test
+	@org.junit.jupiter.api.Order(2)
 	public void testParkingLotExit() {
-		// testParkingACar();
+		// testParkingACar(); => Not good for isolations of the test
+
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		parkingService.processExitingVehicle();
 
 		Ticket ticketInBDD = parkingService.getTicketInBDD();
