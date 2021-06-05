@@ -9,7 +9,6 @@ public class Ticket {
 	private double price;
 	private Date inTime;
 	private Date outTime;
-	private int ocurrenciesNumber;
 
 	public int getId() {
 		return id;
@@ -59,12 +58,4 @@ public class Ticket {
 		this.outTime = outTime;
 	}
 
-	public void setOcurrenciesNumber(int ocurrenciesNumber) {
-		this.ocurrenciesNumber = ocurrenciesNumber;
-
-	}
-
-	public int getOcurrenciesNumber() {
-		return ocurrenciesNumber;
-	}
 }

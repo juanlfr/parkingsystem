@@ -68,7 +68,7 @@ public class ParkingServiceTest {
 		ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
 		ticket.setParkingSpot(parkingSpot);
 		ticket.setVehicleRegNumber("ABCDEF");
-		ticket.setOcurrenciesNumber(3);
+
 		when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
 		when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
 		parkingService.processExitingVehicle();

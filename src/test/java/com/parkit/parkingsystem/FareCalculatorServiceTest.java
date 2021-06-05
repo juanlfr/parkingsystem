@@ -165,6 +165,7 @@ public class FareCalculatorServiceTest {
 
 	@Test
 	public void calculateFivePercentDiscountFareCarForLoyalClient() {
+
 		Date inTime = new Date();
 		// 20 minutes parking should be free
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
@@ -174,8 +175,10 @@ public class FareCalculatorServiceTest {
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
-		ticket.setOcurrenciesNumber(2);
+
 		fareCalculatorService.calculateFare(ticket);
+
+		fareCalculatorService.calculateFareWithDiscount(ticket);
 		// for one hour the ticket price should be 0.95 if client is known
 		assertEquals(1.425, ticket.getPrice());
 
@@ -183,6 +186,7 @@ public class FareCalculatorServiceTest {
 
 	@Test
 	public void calculateFivePercentDiscountFareBikeForLoyalClient() {
+
 		Date inTime = new Date();
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		Date outTime = new Date();
@@ -191,8 +195,9 @@ public class FareCalculatorServiceTest {
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
-		ticket.setOcurrenciesNumber(2);
+
 		fareCalculatorService.calculateFare(ticket);
+		fareCalculatorService.calculateFareWithDiscount(ticket);
 		// for one hour the ticket price should be 0.95 if client is known
 		assertEquals(0.95, ticket.getPrice());
 

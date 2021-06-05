@@ -21,7 +21,7 @@ public class ParkingService {
 	private InputReaderUtil inputReaderUtil;
 	private ParkingSpotDAO parkingSpotDAO;
 	private TicketDAO ticketDAO;
-	private int numberOfEntriesToBeARegularClient = 1;
+	private int numberOfEntriesToBeARecurrentClient = 1;
 
 	public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO) {
 		this.inputReaderUtil = inputReaderUtil;
@@ -30,14 +30,19 @@ public class ParkingService {
 	}
 
 	public void processIncomingVehicle() {
+
 		try {
 			ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
 			if (parkingSpot != null && parkingSpot.getId() > 0) {
 				String vehicleRegNumber = getVehichleRegNumber();
+				int numberOfUserEntries = ticketDAO.getCountUserVisits(vehicleRegNumber);
+				if (numberOfUserEntries > numberOfEntriesToBeARecurrentClient) {
+					System.out.println(
+							"Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
+				}
 				parkingSpot.setAvailable(false);
-				parkingSpotDAO.updateParking(parkingSpot);// allot this parking space and mark it's availability as
-															// false
-
+				// allot this parking space and mark it's availability as false
+				parkingSpotDAO.updateParking(parkingSpot);
 				Date inTime = new Date();
 				Ticket ticket = new Ticket();
 				// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
@@ -106,15 +111,19 @@ public class ParkingService {
 			Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
 			Date outTime = new Date();
 			ticket.setOutTime(outTime);
+
 			fareCalculatorService.calculateFare(ticket);
-			verifyRegularClient(ticket.getOcurrenciesNumber());
+
+			int numberOfUserEntries = ticketDAO.getCountUserVisits(vehicleRegNumber);
+
+			if (numberOfUserEntries > numberOfEntriesToBeARecurrentClient) {
+				fareCalculatorService.calculateFareWithDiscount(ticket);
+			}
+
 			if (ticketDAO.updateTicket(ticket)) {
 				ParkingSpot parkingSpot = ticket.getParkingSpot();
 				parkingSpot.setAvailable(true);
 				parkingSpotDAO.updateParking(parkingSpot);
-				if (verifyRegularClient(ticket.getOcurrenciesNumber())) {
-					System.out.println("Congratulations! You are a regular client, you will have 5% discount");
-				}
 				System.out.println("Please pay the parking fare:" + ticket.getPrice());
 				System.out.println(
 						"Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
@@ -126,30 +135,4 @@ public class ParkingService {
 		}
 	}
 
-	public boolean verifyRegularClient(int ocurrenciesNumber) {
-
-		boolean result = (ocurrenciesNumber > numberOfEntriesToBeARegularClient) ? true : false;
-		return result;
-	}
-
-	public Ticket getTicketInBDD() {
-		Ticket ticket = null;
-		try {
-			ticket = ticketDAO.getTicket(getVehichleRegNumber());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return ticket;
-
-	}
-
-	// public ParkingSpot checkParkingSpotDAO(Ticket ticket) {
-	//
-	// ParkingSpot parkingSpot =
-	// parkingSpotDAO.checkAvalableParkingSpot(ticket.getParkingSpot().getId());
-	//
-	// return parkingSpot;
-	//
-	// }
 }

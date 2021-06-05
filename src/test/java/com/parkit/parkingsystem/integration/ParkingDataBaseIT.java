@@ -17,7 +17,6 @@ import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
-import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
@@ -66,11 +65,16 @@ public class ParkingDataBaseIT {
 		parkingService.processIncomingVehicle();
 		// TODO: check that a ticket is actually saved in DB and Parking table is
 		// updated with availability
-		Ticket ticketInBDD = parkingService.getTicketInBDD();
-		ParkingSpot parkingSpot = ticketInBDD.getParkingSpot();
+		Ticket ticketInBDD = null;
+		try {
+			ticketInBDD = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
+		} catch (Exception e) {
 
+			e.printStackTrace();
+		}
 		assertThat(ticketInBDD).hasFieldOrPropertyWithValue("vehicleRegNumber", "ABCDEF");
-		assertThat(parkingSpot).hasFieldOrPropertyWithValue("isAvailable", false);
+		assertThat(ticketInBDD.getParkingSpot()).hasFieldOrPropertyWithValue("isAvailable", false);
+
 	}
 
 	@Test
@@ -86,7 +90,13 @@ public class ParkingDataBaseIT {
 		}
 		parkingService.processExitingVehicle();
 
-		Ticket ticketInBDD = parkingService.getTicketInBDD();
+		Ticket ticketInBDD = null;
+		try {
+			ticketInBDD = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		assertThat(ticketInBDD.getPrice()).isNotNull();
 		assertThat(ticketInBDD.getOutTime()).isAfter(ticketInBDD.getInTime());
 		// TODO: check that the fare generated and out time are populated correctly in

@@ -8,6 +8,9 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
+	int numberOfEntriesToBeRecurrent = 1;
+	double discountPercent = 0.05;
+
 	public void calculateFare(Ticket ticket) {
 		if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
 			throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
@@ -27,16 +30,10 @@ public class FareCalculatorService {
 
 			case CAR: {
 				ticket.setPrice(durationInHours * Fare.CAR_RATE_PER_HOUR);
-				if (ticket.getOcurrenciesNumber() > 1) {
-					ticket.setPrice(ticket.getPrice() - ticket.getPrice() * 0.05);
-				}
 				break;
 			}
 			case BIKE: {
 				ticket.setPrice(durationInHours * Fare.BIKE_RATE_PER_HOUR);
-				if (ticket.getOcurrenciesNumber() > 1) {
-					ticket.setPrice(ticket.getPrice() - ticket.getPrice() * 0.05);
-				}
 				break;
 			}
 			default:
@@ -46,4 +43,12 @@ public class FareCalculatorService {
 			ticket.setPrice(0);
 		}
 	}
+
+	public double calculateFareWithDiscount(Ticket ticket) {
+
+		double ticketPriceWithDiscount = ticket.getPrice() - ticket.getPrice() * discountPercent;
+		ticket.setPrice(ticketPriceWithDiscount);
+		return ticketPriceWithDiscount;
+	}
+
 }

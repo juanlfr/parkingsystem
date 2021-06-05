@@ -51,11 +51,8 @@ public class TicketDAO {
 			// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
 			ps.setString(1, vehicleRegNumber);
 			ResultSet rs = ps.executeQuery();
-			// Count occurrencies for a same VEHICLE_REG_NUMBER
-			PreparedStatement ps2 = con.prepareStatement(DBConstants.COUNT_OCURRENCIES);
-			ps2.setString(1, vehicleRegNumber);
-			ResultSet rs2 = ps2.executeQuery();
-			if (rs.next() && rs2.next()) {
+
+			if (rs.next()) {
 				ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)), false);
 				ticket.setParkingSpot(parkingSpot);
 				ticket.setId(rs.getInt(2));
@@ -63,7 +60,7 @@ public class TicketDAO {
 				ticket.setPrice(rs.getDouble(3));
 				ticket.setInTime(rs.getTimestamp(4));
 				ticket.setOutTime(rs.getTimestamp(5));
-				ticket.setOcurrenciesNumber(rs2.getInt(1));
+
 			}
 			dataBaseConfig.closeResultSet(rs);
 			dataBaseConfig.closePreparedStatement(ps);
@@ -92,6 +89,30 @@ public class TicketDAO {
 			dataBaseConfig.closeConnection(con);
 		}
 		return false;
+	}
+
+	public int getCountUserVisits(String vehicleRegNumber) {
+		Connection con = null;
+		int userVisits = 0;
+		try {
+			con = dataBaseConfig.getConnection();
+			// Count occurrencies for a same VEHICLE_REG_NUMBER
+			PreparedStatement ps = con.prepareStatement(DBConstants.COUNT_OCURRENCIES);
+			ps.setString(1, vehicleRegNumber);
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				userVisits = rs.getInt(1);
+			}
+			dataBaseConfig.closeResultSet(rs);
+			dataBaseConfig.closePreparedStatement(ps);
+
+		} catch (Exception ex) {
+			logger.error("Error fetching next available slot", ex);
+		} finally {
+			dataBaseConfig.closeConnection(con);
+		}
+		return userVisits;
 	}
 
 }
