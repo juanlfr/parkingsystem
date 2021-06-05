@@ -22,7 +22,7 @@ public class FareCalculatorService {
 
 		ParkingType parkingType = ticket.getParkingSpot().getParkingType();
 
-		if (durationInHours > 0.5) {
+		if (durationInHours >= 0.5) {
 			switch (parkingType) {
 
 			case CAR: {
