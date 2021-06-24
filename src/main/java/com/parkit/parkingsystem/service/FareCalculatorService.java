@@ -4,28 +4,34 @@ import java.util.concurrent.TimeUnit;
 
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
+import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
-	int numberOfEntriesToBeRecurrent = 1;
-	double discountPercent = 0.05;
+	private static final double DISCOUNT_PERCENT = 0.05;
+
+	private TicketDAO ticketDAO;
+
+	public FareCalculatorService() {
+	}
+
+	public FareCalculatorService(TicketDAO ticketDAO) {
+		this.ticketDAO = ticketDAO;
+	}
 
 	public void calculateFare(Ticket ticket) {
+
 		if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
 			throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
 		}
 
-		long inHour = ticket.getInTime().getTime();
-		long outHour = ticket.getOutTime().getTime();
-		// Duration calculation in milliseconds
-		long durationInMillies = Math.abs(outHour - inHour);
-		// Conversion from milliseconds to hours
-		double durationInHours = (double) TimeUnit.MILLISECONDS.toMinutes(durationInMillies) / 60;
+		double durationInHours = calculateDuration(ticket);
 
 		ParkingType parkingType = ticket.getParkingSpot().getParkingType();
 
 		if (durationInHours >= 0.5) {
+
 			switch (parkingType) {
 
 			case CAR: {
@@ -42,13 +48,32 @@ public class FareCalculatorService {
 		} else {
 			ticket.setPrice(0);
 		}
+		if (isRecurrentUser(ticket) > 1 && durationInHours >= 0.5) {
+			calculateFareWithDiscount(ticket);
+		}
+
 	}
 
-	public double calculateFareWithDiscount(Ticket ticket) {
+	private double calculateDuration(Ticket ticket) {
 
-		double ticketPriceWithDiscount = ticket.getPrice() - ticket.getPrice() * discountPercent;
+		long inHour = ticket.getInTime().getTime();
+		long outHour = ticket.getOutTime().getTime();
+		// Duration calculation in milliseconds
+		long durationInMillies = Math.abs(outHour - inHour);
+		// Conversion from milliseconds to hours
+		double durationInHours = (double) TimeUnit.MILLISECONDS.toMinutes(durationInMillies) / 60;
+		return durationInHours;
+	}
+
+	public int isRecurrentUser(Ticket ticket) {
+		int numberOfUserEntries = ticketDAO.getCountUserVisits(ticket.getVehicleRegNumber());
+		return numberOfUserEntries;
+
+	}
+
+	private void calculateFareWithDiscount(Ticket ticket) {
+		double ticketPriceWithDiscount = ticket.getPrice() - ticket.getPrice() * DISCOUNT_PERCENT;
 		ticket.setPrice(ticketPriceWithDiscount);
-		return ticketPriceWithDiscount;
 	}
 
 }

@@ -10,6 +10,7 @@ import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,14 +24,18 @@ import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 
 @ExtendWith(MockitoExtension.class)
+
 public class ParkingServiceTest {
 
+	@InjectMocks
 	private static ParkingService parkingService;
 
 	@Mock
 	private static InputReaderUtil inputReaderUtil;
+
 	@Mock
 	private static ParkingSpotDAO parkingSpotDAO;
+
 	@Mock
 	private static TicketDAO ticketDAO;
 
@@ -40,8 +45,6 @@ public class ParkingServiceTest {
 			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 
 			when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
-
-			parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -67,10 +70,10 @@ public class ParkingServiceTest {
 		Ticket ticket = new Ticket();
 		ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
 		ticket.setParkingSpot(parkingSpot);
-		ticket.setVehicleRegNumber("ABCDEF");
 
 		when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
 		when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
+
 		parkingService.processExitingVehicle();
 		verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
 	}

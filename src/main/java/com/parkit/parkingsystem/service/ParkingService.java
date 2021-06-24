@@ -16,12 +16,12 @@ public class ParkingService {
 
 	private static final Logger logger = LogManager.getLogger("ParkingService");
 
-	private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
+	private static FareCalculatorService fareCalculatorService = new FareCalculatorService(new TicketDAO());
 
 	private InputReaderUtil inputReaderUtil;
 	private ParkingSpotDAO parkingSpotDAO;
 	private TicketDAO ticketDAO;
-	private int numberOfEntriesToBeARecurrentClient = 1;
+	private int numberOfEntriesToBeARecurrentClient = 0;
 
 	public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO) {
 		this.inputReaderUtil = inputReaderUtil;
@@ -106,6 +106,7 @@ public class ParkingService {
 	}
 
 	public void processExitingVehicle() {
+
 		try {
 			String vehicleRegNumber = getVehichleRegNumber();
 			Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
@@ -113,12 +114,6 @@ public class ParkingService {
 			ticket.setOutTime(outTime);
 
 			fareCalculatorService.calculateFare(ticket);
-
-			int numberOfUserEntries = ticketDAO.getCountUserVisits(vehicleRegNumber);
-
-			if (numberOfUserEntries > numberOfEntriesToBeARecurrentClient) {
-				fareCalculatorService.calculateFareWithDiscount(ticket);
-			}
 
 			if (ticketDAO.updateTicket(ticket)) {
 				ParkingSpot parkingSpot = ticket.getParkingSpot();

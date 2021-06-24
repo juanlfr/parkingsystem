@@ -2,32 +2,43 @@ package com.parkit.parkingsystem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.Date;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
+import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.FareCalculatorService;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class FareCalculatorServiceTest {
 
+	@InjectMocks
 	private static FareCalculatorService fareCalculatorService;
-	private Ticket ticket;
 
-	@BeforeAll
-	private static void setUp() {
-		fareCalculatorService = new FareCalculatorService();
-	}
+	@Mock
+	private TicketDAO ticketDAO;
+
+	private Ticket ticket;
 
 	@BeforeEach
 	private void setUpPerTest() {
 		ticket = new Ticket();
+		ticket.setVehicleRegNumber("ABC123");
 	}
 
 	@Test
@@ -164,13 +175,14 @@ public class FareCalculatorServiceTest {
 	}
 
 	@Test
-	public void calculateFivePercentDiscountFareCarForLoyalClient() {
+	public void calculatePercentDiscountFareCarForRecurrentClient() {
 
 		Date inTime = new Date();
-		// 20 minutes parking should be free
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+
+		Mockito.when(ticketDAO.getCountUserVisits(any(String.class))).thenReturn(2);
 
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
@@ -178,26 +190,27 @@ public class FareCalculatorServiceTest {
 
 		fareCalculatorService.calculateFare(ticket);
 
-		fareCalculatorService.calculateFareWithDiscount(ticket);
 		// for one hour the ticket price should be 0.95 if client is known
 		assertEquals(1.425, ticket.getPrice());
 
 	}
 
 	@Test
-	public void calculateFivePercentDiscountFareBikeForLoyalClient() {
+	public void calculatePercentDiscountFareBikeForRecurrentClient() {
 
 		Date inTime = new Date();
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
 
+		Mockito.when(ticketDAO.getCountUserVisits(any(String.class))).thenReturn(2);
+
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 
 		fareCalculatorService.calculateFare(ticket);
-		fareCalculatorService.calculateFareWithDiscount(ticket);
+
 		// for one hour the ticket price should be 0.95 if client is known
 		assertEquals(0.95, ticket.getPrice());
 

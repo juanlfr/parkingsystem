@@ -56,7 +56,7 @@ public class ParkingDataBaseIT {
 
 	@Test
 	@org.junit.jupiter.api.Order(1)
-	public void testParkingACar() {
+	public void testParkingACar() throws Exception {
 
 		when(inputReaderUtil.readSelection()).thenReturn(1);
 
@@ -66,12 +66,9 @@ public class ParkingDataBaseIT {
 		// TODO: check that a ticket is actually saved in DB and Parking table is
 		// updated with availability
 		Ticket ticketInBDD = null;
-		try {
-			ticketInBDD = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
-		} catch (Exception e) {
 
-			e.printStackTrace();
-		}
+		ticketInBDD = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
+
 		assertThat(ticketInBDD).hasFieldOrPropertyWithValue("vehicleRegNumber", "ABCDEF");
 		assertThat(ticketInBDD.getParkingSpot()).hasFieldOrPropertyWithValue("isAvailable", false);
 
