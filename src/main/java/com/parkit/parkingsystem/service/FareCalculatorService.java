@@ -9,8 +9,6 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
-	private static final double DISCOUNT_PERCENT = 0.05;
-
 	private TicketDAO ticketDAO;
 
 	public FareCalculatorService() {
@@ -48,6 +46,7 @@ public class FareCalculatorService {
 		} else {
 			ticket.setPrice(0);
 		}
+		//verify if the user has come before to the parcking to apply a disocunt
 		if (isRecurrentUser(ticket) > 1 && durationInHours >= 0.5) {
 			calculateFareWithDiscount(ticket);
 		}
@@ -72,7 +71,7 @@ public class FareCalculatorService {
 	}
 
 	private void calculateFareWithDiscount(Ticket ticket) {
-		double ticketPriceWithDiscount = ticket.getPrice() - ticket.getPrice() * DISCOUNT_PERCENT;
+		double ticketPriceWithDiscount = ticket.getPrice() - ticket.getPrice() * Fare.DISCOUNT_PERCENT;
 		ticket.setPrice(ticketPriceWithDiscount);
 	}
 

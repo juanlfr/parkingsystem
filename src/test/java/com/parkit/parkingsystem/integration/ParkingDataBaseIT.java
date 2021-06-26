@@ -65,9 +65,8 @@ public class ParkingDataBaseIT {
 		parkingService.processIncomingVehicle();
 		// TODO: check that a ticket is actually saved in DB and Parking table is
 		// updated with availability
-		Ticket ticketInBDD = null;
 
-		ticketInBDD = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
+		Ticket ticketInBDD = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
 
 		assertThat(ticketInBDD).hasFieldOrPropertyWithValue("vehicleRegNumber", "ABCDEF");
 		assertThat(ticketInBDD.getParkingSpot()).hasFieldOrPropertyWithValue("isAvailable", false);
@@ -76,8 +75,7 @@ public class ParkingDataBaseIT {
 
 	@Test
 	@org.junit.jupiter.api.Order(2)
-	public void testParkingLotExit() {
-		// testParkingACar(); => Not good for isolations of the test
+	public void testParkingLotExit() throws Exception {
 
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		try {
@@ -87,15 +85,11 @@ public class ParkingDataBaseIT {
 		}
 		parkingService.processExitingVehicle();
 
-		Ticket ticketInBDD = null;
-		try {
-			ticketInBDD = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		assertThat(ticketInBDD.getPrice()).isNotNull();
+		Ticket ticketInBDD = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
+
 		assertThat(ticketInBDD.getOutTime()).isAfter(ticketInBDD.getInTime());
+		assertThat(ticketInBDD.getPrice()).isZero();
+
 		// TODO: check that the fare generated and out time are populated correctly in
 		// the database
 	}
