@@ -3,6 +3,7 @@ package com.parkit.parkingsystem.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +29,7 @@ public class ParkingSpotDAO {
 				result = rs.getInt(1);
 			}
 			dataBaseConfig.closeResultSet(rs);
-		} catch (Exception ex) {
+		} catch (SQLException | ClassNotFoundException ex) {
 			logger.error("Error fetching next available slot", ex);
 		}
 		return result;
@@ -42,7 +43,7 @@ public class ParkingSpotDAO {
 			ps.setInt(2, parkingSpot.getId());
 			int updateRowCount = ps.executeUpdate();
 			return (updateRowCount == 1);
-		} catch (Exception ex) {
+		} catch (SQLException | ClassNotFoundException ex) {
 			logger.error("Error updating parking info", ex);
 			return false;
 		}

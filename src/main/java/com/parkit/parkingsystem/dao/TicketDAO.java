@@ -3,6 +3,7 @@ package com.parkit.parkingsystem.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,8 +34,8 @@ public class TicketDAO {
 			ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
 			ps.setTimestamp(5, (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
 			return ps.execute();
-		} catch (Exception ex) {
-			logger.error("Error fetching next available slot", ex);
+		} catch (SQLException | ClassNotFoundException ex) {
+			logger.error("Error saving ticket info", ex);
 		}
 		return false;
 	}
@@ -61,8 +62,8 @@ public class TicketDAO {
 			}
 			dataBaseConfig.closeResultSet(rs);
 
-		} catch (Exception ex) {
-			logger.error("Error fetching next available slot", ex);
+		} catch (SQLException | ClassNotFoundException ex) {
+			logger.error("Error fetching ticket info", ex);
 		}
 		return ticket;
 	}
@@ -77,8 +78,8 @@ public class TicketDAO {
 			ps.setInt(3, ticket.getId());
 			ps.execute();
 			return true;
-		} catch (Exception ex) {
-			logger.error("Error saving ticket info", ex);
+		} catch (SQLException | ClassNotFoundException ex) {
+			logger.error("Error updating ticket info", ex);
 		}
 		return false;
 	}
@@ -98,8 +99,8 @@ public class TicketDAO {
 			}
 			dataBaseConfig.closeResultSet(rs);
 
-		} catch (Exception ex) {
-			logger.error("Error fetching next available slot", ex);
+		} catch (SQLException | ClassNotFoundException ex) {
+			logger.error("Error fetching number of user visits", ex);
 		}
 		return userVisits;
 	}
