@@ -46,7 +46,7 @@ public class FareCalculatorService {
 		} else {
 			ticket.setPrice(0);
 		}
-		//verify if the user has come before to the parcking to apply a disocunt
+		// verify if the user has come before to the parcking to apply a disocunt
 		if (isRecurrentUser(ticket) > 1 && durationInHours >= 0.5) {
 			calculateFareWithDiscount(ticket);
 		}

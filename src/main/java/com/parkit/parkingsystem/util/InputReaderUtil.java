@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 public class InputReaderUtil {
 
-	private static Scanner scan = new Scanner(System.in);
+	private static Scanner scan = new Scanner(System.in, "utf-8");
 	private static final Logger logger = LogManager.getLogger("InputReaderUtil");
 
 	public int readSelection() {

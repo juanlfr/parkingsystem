@@ -2,6 +2,7 @@ package com.parkit.parkingsystem.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -62,7 +63,7 @@ public class TicketDAOIT {
 
 	@Test
 	@Order(1)
-	public void saveTicketTest() {
+	public void saveTicketTest() throws SQLException {
 
 		boolean returnedValue = ticketDAO.saveTicket(ticket);
 		assertThat(returnedValue).isFalse();
@@ -71,7 +72,7 @@ public class TicketDAOIT {
 
 	@Test
 	@Order(2)
-	public void getTicketTest() {
+	public void getTicketTest() throws SQLException {
 
 		Ticket returnedTicket = ticketDAO.getTicket(ticket.getVehicleRegNumber());
 
@@ -82,7 +83,7 @@ public class TicketDAOIT {
 
 	@Test
 	@Order(3)
-	public void updateTicketTest() {
+	public void updateTicketTest() throws SQLException {
 
 		Date currentDate = new Date();
 		Calendar c = Calendar.getInstance();
