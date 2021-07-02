@@ -49,6 +49,8 @@ public class FareCalculatorServiceTest {
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 
+		Mockito.when(ticketDAO.getCountUserVisits(any(String.class))).thenReturn(0);
+
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
@@ -62,6 +64,8 @@ public class FareCalculatorServiceTest {
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+
+		Mockito.when(ticketDAO.getCountUserVisits(any(String.class))).thenReturn(0);
 
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
@@ -104,6 +108,8 @@ public class FareCalculatorServiceTest {
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
 
+		Mockito.when(ticketDAO.getCountUserVisits(any(String.class))).thenReturn(0);
+
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
@@ -119,6 +125,8 @@ public class FareCalculatorServiceTest {
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 
+		Mockito.when(ticketDAO.getCountUserVisits(any(String.class))).thenReturn(0);
+
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
@@ -133,6 +141,8 @@ public class FareCalculatorServiceTest {
 																			// parking fare per hour
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+
+		Mockito.when(ticketDAO.getCountUserVisits(any(String.class))).thenReturn(0);
 
 		ticket.setInTime(inTime);
 		ticket.setOutTime(outTime);
@@ -172,7 +182,6 @@ public class FareCalculatorServiceTest {
 
 		fareCalculatorService.calculateFare(ticket);
 		assertEquals(0, ticket.getPrice());
-
 	}
 
 	@Test

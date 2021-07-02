@@ -18,6 +18,12 @@ public class FareCalculatorService {
 		this.ticketDAO = ticketDAO;
 	}
 
+	/**
+	 * Method to calculate the price of a ticket based on duration and number of
+	 * user visits
+	 * 
+	 * @param ticket
+	 */
 	public void calculateFare(Ticket ticket) {
 
 		if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
@@ -28,6 +34,7 @@ public class FareCalculatorService {
 
 		ParkingType parkingType = ticket.getParkingSpot().getParkingType();
 
+		// verify if the user has stayed in the parking for more than half hour
 		if (durationInHours >= 0.5) {
 
 			switch (parkingType) {
@@ -43,15 +50,25 @@ public class FareCalculatorService {
 			default:
 				throw new IllegalArgumentException("Unkown Parking Type");
 			}
+			// verify if the user has come before more than once to the parking to apply a
+			// discount
+			if (numberOfUserVisits(ticket) > 1) {
+
+				double ticketPriceWithDiscount = ticket.getPrice() - ticket.getPrice() * Fare.DISCOUNT_PERCENT;
+
+				ticket.setPrice(ticketPriceWithDiscount);
+			}
 		} else {
 			ticket.setPrice(0);
 		}
-		// verify if the user has come before to the parcking to apply a disocunt
-		if (isRecurrentUser(ticket) > 1 && durationInHours >= 0.5) {
-			calculateFareWithDiscount(ticket);
-		}
-
 	}
+
+	/**
+	 * Method to calculate the duration time
+	 * 
+	 * @param ticket
+	 * @return duration time in hours
+	 */
 
 	private double calculateDuration(Ticket ticket) {
 
@@ -64,15 +81,15 @@ public class FareCalculatorService {
 		return durationInHours;
 	}
 
-	public int isRecurrentUser(Ticket ticket) {
+	/**
+	 * Method to get the number of user's visits
+	 * 
+	 * @param ticket
+	 * @return
+	 */
+	public int numberOfUserVisits(Ticket ticket) {
 		int numberOfUserEntries = ticketDAO.getCountUserVisits(ticket.getVehicleRegNumber());
 		return numberOfUserEntries;
-
-	}
-
-	private void calculateFareWithDiscount(Ticket ticket) {
-		double ticketPriceWithDiscount = ticket.getPrice() - ticket.getPrice() * Fare.DISCOUNT_PERCENT;
-		ticket.setPrice(ticketPriceWithDiscount);
 	}
 
 }
