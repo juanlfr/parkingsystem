@@ -52,7 +52,7 @@ public class FareCalculatorService {
 			}
 			// verify if the user has come before more than once to the parking to apply a
 			// discount
-			if (numberOfUserVisits(ticket) > 1) {
+			if (numberOfUserVisits(ticket) > Fare.NUMBER_OF_USER_VISITS) {
 
 				double ticketPriceWithDiscount = ticket.getPrice() - ticket.getPrice() * Fare.DISCOUNT_PERCENT;
 

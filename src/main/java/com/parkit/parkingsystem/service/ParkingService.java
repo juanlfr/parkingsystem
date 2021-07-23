@@ -5,6 +5,7 @@ import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
@@ -21,7 +22,6 @@ public class ParkingService {
 	private InputReaderUtil inputReaderUtil;
 	private ParkingSpotDAO parkingSpotDAO;
 	private TicketDAO ticketDAO;
-	private int numberOfEntriesToBeARecurrentClient = 0;
 
 	public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO) {
 		this.inputReaderUtil = inputReaderUtil;
@@ -36,7 +36,7 @@ public class ParkingService {
 			if (parkingSpot != null && parkingSpot.getId() > 0) {
 				String vehicleRegNumber = getVehichleRegNumber();
 				int numberOfUserEntries = ticketDAO.getCountUserVisits(vehicleRegNumber);
-				if (numberOfUserEntries > numberOfEntriesToBeARecurrentClient) {
+				if (numberOfUserEntries > Fare.NUMBER_OF_USER_VISITS) {
 					System.out.println(
 							"Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
 				}
